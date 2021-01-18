@@ -2,12 +2,18 @@ from flask import Flask
 from flask import request
 from flask import jsonify
 from flask_cors import CORS
-
+#from random_username.generate import generate_username
+import random
 app = Flask(__name__)
 CORS(app) #
 @app.route('/')
 def hello_world():
-	return 'Hello, world!'
+   return 'Hello, world!'
+def generate_id():
+   return str(random.randint(1, 10000))
+#def generate_id():
+ #  return generate_username(0)
+
 
 users = {
    'users_list' :
@@ -59,24 +65,31 @@ def get_users():
 					return subdict
 		return users
 	elif request.method == 'POST':
-		userToAdd = request.get_json()
-		users['users_list'].append(userToAdd)
-		resp = jsonify(success=True)
-      	#resp.status_code = 200 #optionally, you can always set a response code. 
-      	# 200 is the default code for a normal response	
-		return resp
+	   temp = generate_id()
+	   userToAdd = request.get_json()
+	   userToAdd['id'] = temp
+	   users['users_list'].append(userToAdd)
+	   resp = jsonify(success=True)
+	   resp.status_code = 201
+      #resp.status_code = 200 #optionally, you can always set a response code. 
+      # 200 is the default code for a normal response	
+	   return resp
 	if request.method == 'DELETE':
 		search_id = request.args.get('id')
 		if search_id:
 			for user in users['users_list']:
 				if user['id'] == search_id:
 					 users['users_list'].remove(user)
+			resp = jsonify(success=True)
+			resp.status_code = 204
+			return resp
 		return users
 		#if search_username :
 		#	print("gets here")
 			#for user in users['users_list']:
 			#	if user['id'] == search_username:
 			#		users['users_list'].remove(user)
+
 
 
 '''
